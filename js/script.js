@@ -1,36 +1,48 @@
-let nombrePieza;
-let piezasDisponibles;
-let piezasUsadas;
-
-const cargaPieza = () => {
-    alert("Buenos dias --- Carga y Descarga de piezas de Ferreteria");
-    nombrePieza = prompt("Ingrese el nombre para la pieza"); 
-    while (nombrePieza === ""){
-    nombrePieza = prompt("Por favor ingrese un nombre para la pieza");
+class Restaurante{
+    constructor(){
+        this.nombre = `Session`;
+        this.direccion = `Siria 381`;
+        this.usuario = `session`;
+        this.clave = `123`;
+        this.reservas = [];
     }
-    do{
-        piezasDisponibles = Number(prompt(`Cantidad de piezas disponibles de ${nombrePieza}`));
-        console.log(isNaN(piezasDisponibles));
-    }while (isNaN(piezasDisponibles) !== false);
-}
-
-const usoPieza = () => {
-    while (piezasDisponibles !== 0){
-        do{
-            piezasUsadas = Number(prompt("Cantidad de piezas usadas?"));
-        }while (isNaN(piezasUsadas) !== false);
-        if (piezasUsadas<=piezasDisponibles){
-            piezasDisponibles = piezasDisponibles - piezasUsadas;
-            alert(`Quedan ${piezasDisponibles} piezas de ${nombrePieza}`);
-        }else if (piezasUsadas>piezasDisponibles){
-            alert(`No se pudo realizar la accion, solo quedan ${piezasDisponibles} piezas`);
+    mostrarMenu(){
+        let control = 1;
+        while (control === 1){
+            let op;
+            do{
+            op = Number(prompt(`Bienvenidos Al Restaurante Sessions.
+            Si desea hacer una reserva presione 1.
+            Para dejarnos un mensaje presione 0.`));
+            }while((op>1) || (op<0))
+            if (op === 1){
+                let res = new Reserva();
+                res.cargaDatos();
+                console.log(res);
+                this.reservas.push(res);
+                console.log(this.reservas);
+            }
+            do{
+            control = Number(prompt(`
+            0 - Cerrar Programa
+            1 - Volver al menu`));
+            }while((control>1) || (control<0))
         }
     }
 }
+class Reserva{
+    constructor(){
+        this.nombreResponsable;
+        this.telResponsable;
+        this.cantPersonas;
+    }
+    cargaDatos(){
+        this.nombreResponsable = prompt(`Ingresar el nombre de la persona a cargo de la reserva`);
+        this.telResponsable = Number(prompt(`Ingresar el telefono a cargo de la reserva`));
+        this.cantPersonas = Number(prompt(`Ingresar la cantidad de personas en la reserva`));
+    }
+}
 
-const ferreteria = () => {
-    cargaPieza();
-    usoPieza();
-};
-
-ferreteria();
+const controlador = new Restaurante;
+console.log(Restaurante);
+controlador.mostrarMenu();
