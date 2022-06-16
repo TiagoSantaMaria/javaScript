@@ -11,28 +11,56 @@ class Restaurante{
         while (control === 1){
             let op;
             do{
-            op = Number(prompt(`Bienvenidos Al Restaurante Sessions.
-            Si desea hacer una reserva presione 1.
-            Para dejarnos un mensaje presione 0.
-            Para Confirmar una Reserva presione 2`));
-            }while((op>2) || (op<0))
+            op = Number(prompt(`Bienvenidos Al Restaurante Sessions.0
+            0 = Para dejarnos un mensaje.
+            1 = Si desea hacer una reserva.
+            2 = Para Confirmar una Reserva.
+            3 = Mostrar Reservas Proximas`));
+            }while((op>3) || (op<0))
             if (op === 1){
-                let res = new Reserva();
-                res.cargaDatos();
-                this.reservas.push(res);
+                this.cargarDatosReserva();
             }
             if (op === 2){
-                let nombreReserva = prompt(`Ingrese el nombre del dueño de la reserva:`);
-                let reservaCompletada = this.reservas.find(reservaPen => reservaPen.nombreResponsable === nombreReserva);
-                const index = this.reservas.indexOf(reservaCompletada);
-                this.reservas[index].reservaPendiente = 'false';
+                this.confirmarReserva();
             }
+            if (op === 3){
+                this.mostrarProximasReservas();
+            }            
             do{
             control = Number(prompt(`
             0 - Cerrar Programa
             1 - Volver al menu`));
             }while((control>1) || (control<0))
         }
+    }
+    cargarDatosReserva(){
+        let res = new Reserva();
+        res.cargaDatos();
+        this.reservas.push(res);
+    }
+    confirmarReserva(){
+        let nombreReserva = prompt(`Ingrese el nombre del dueño de la reserva:`);
+        let reservaCompletada = this.reservas.find(reservaPen => reservaPen.nombreResponsable === nombreReserva);
+        const index = this.reservas.indexOf(reservaCompletada);
+        this.reservas[index].reservaPendiente = 'false';
+    }
+    mostrarProximasReservas(){
+        const reservasProximas = this.reservas.filter(reservasProx => reservasProx.reservaPendiente === 'true');
+        reservasProximas.sort(() => { //Aca quiero ordenar para q me muestre primero las fechas proximas pero no pude :(
+            if (reservasProximas.diaReserva > reservasProximas.diaReserv) {
+                return 1;
+                }
+            if (reservasProximas.diaReserva < reservasProximas.diaReserva) {
+                return -1;
+                }
+            return 0;
+        })
+        reservasProximas.forEach( reservaProx => {
+            console.log(`Prox Reserva:
+            Nombre: ${reservaProx.nombreResponsable} 
+            CantPersonas: ${reservaProx.cantPersonas}
+            Dia Reserva: ${reservaProx.diaReserva}`);
+        })
     }
 }
 class Reserva{
