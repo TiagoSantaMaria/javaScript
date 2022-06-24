@@ -4,13 +4,13 @@ class Restaurante{
         this.direccion = `Siria 381`;
         this.usuario = `session`;
         this.clave = `123`;
-        this.reservasMaxPorDia = 40;
+        this.reservasMaxPorDia = 20;
         this.reservas = [];
     }
 
-    cargarDatosReserva(){
+    cargarDatosReserva(nombre, telefono, cantPersonas, fecha){
         let res = new Reserva();
-        res.cargaDatos(this.obtenerDatosFormulario());
+        res.cargaDatos(nombre, telefono, cantPersonas, fecha);
         if (this.controlMaxReservas(res.diaReserva, res.cantPersonas) === 'true'){;
             this.reservas.push(res);
             alert(`Reserva Registrada`)
@@ -18,21 +18,7 @@ class Restaurante{
             alert(`La reserva no pudo ser registrada ya que se alcanzo el limite disponible.`)
         }
     }
-
-    obtenerDatosFormulario(){
-        let formularioReserva = document.getElementById("formularioReservas");
-        formularioReserva.addEventListener("submit", this.guardarDatos());
-    }
-    
-    guardarDatos(e){
-        let nombrePersona = document.getElementById("nombreReserva");
-        let telefonoResponsable = document.getElementById("telefonoReserva");
-        let cantPerReserva = document.getElementById("cantPersonasReservas");
-        let diaReserva = document.getElementById("fechaReserva");
-        return (nombrePersona, telefonoResponsable, cantPerReserva, diaReserva);
-    }
-
-
+/*
     confirmarReserva(){
         let nombreReserva = prompt(`Ingrese el nombre del dueño de la reserva:`);
         let reservaCompletada = this.reservas.find(reservaPen => reservaPen.nombreResponsable === nombreReserva);
@@ -51,6 +37,8 @@ class Restaurante{
             Dia Reserva: ${reservaProx.diaReserva}`);
         })
     }
+*/
+
     controlMaxReservas(fechaCorrienteReserva,cantPersonas){
         let capacidadAcumulada = cantPersonas;
         this.reservas.forEach( reserva => {
@@ -63,6 +51,7 @@ class Restaurante{
         }
     }
 }
+
 class Reserva{
     constructor(){
         this.nombreResponsable;
@@ -77,11 +66,23 @@ class Reserva{
         this.telResponsable = telefono;
         this.cantPersonas = cantPersonasReserva;
         this.diaReserva = new Date(fecha);
-        const date = new Date;
-        this.diaPedidoReserva = date.toUTCString();
     }
 }
 
-const controlador = new Restaurante;
-controlador.cargarDatosReserva();
-console.log(controlador);
+// TRAER ELEMENTOS DEL HTML
+const formularioReserva = document.getElementById("formularioReservas");
+const nombrePersona = document.getElementById("nombreReserva");
+const telefonoResponsable = document.getElementById("telefonoReserva");
+const cantPerReserva = document.getElementById("cantPersonasReservas");
+const diaReserva = document.getElementById("fechaReserva");
+const respuestaFormulario = document.getElementById("respuestaFormulario");
+
+//ARMADO DEL PROGRAMA
+let controlador = new Restaurante;
+formularioReserva.onsubmit = (e) => {
+    e.preventDefault();
+    controlador.cargarDatosReserva(nombrePersona.value, telefonoResponsable.value, cantPerReserva.value, diaReserva.value);
+    console.log(controlador)
+    respuestaFormulario.innerHTML = `Bienvenido ${nombrePersona.value} su reserva fue Registrada con exito`;
+}
+
