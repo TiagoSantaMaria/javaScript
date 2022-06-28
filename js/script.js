@@ -4,18 +4,18 @@ class Restaurante{
         this.direccion = `Siria 381`;
         this.usuario = `session`;
         this.clave = `123`;
-        this.reservasMaxPorDia = 20;
+        this.reservasMaxPorDia = 30;
         this.reservas = [];
     }
 
     cargarDatosReserva(nombre, telefono, cantPersonas, fecha){
         let res = new Reserva();
         res.cargaDatos(nombre, telefono, cantPersonas, fecha);
-        if (this.controlMaxReservas(res.diaReserva, res.cantPersonas) === 'true'){;
+        if (this.controlMaxReservas(res.diaReserva, res.cantPersonas) === 'true'){
             this.reservas.push(res);
-            alert(`Reserva Registrada`)
+            return `true`;
         }else{
-            alert(`La reserva no pudo ser registrada ya que se alcanzo el limite disponible.`)
+            return `false`;
         }
     }
 /*
@@ -25,19 +25,14 @@ class Restaurante{
         const index = this.reservas.indexOf(reservaCompletada);
         this.reservas[index].reservaPendiente = 'false';
     }
+    */
 
     mostrarProximasReservas(){
         const reservasProximas = this.reservas.filter(reservasProx => reservasProx.reservaPendiente === 'true');
         reservasProximas.sort((a, b) => a.diaReserva - b.diaReserva);
         console.log(reservasProximas);
-        reservasProximas.forEach( reservaProx => {
-            console.log(`Prox Reserva:
-            Nombre: ${reservaProx.nombreResponsable} 
-            CantPersonas: ${reservaProx.cantPersonas}
-            Dia Reserva: ${reservaProx.diaReserva}`);
-        })
+        return reservasProximas;
     }
-*/
 
     controlMaxReservas(fechaCorrienteReserva,cantPersonas){
         let capacidadAcumulada = cantPersonas;
@@ -69,20 +64,54 @@ class Reserva{
     }
 }
 
-// TRAER ELEMENTOS DEL HTML
-const formularioReserva = document.getElementById("formularioReservas");
-const nombrePersona = document.getElementById("nombreReserva");
-const telefonoResponsable = document.getElementById("telefonoReserva");
-const cantPerReserva = document.getElementById("cantPersonasReservas");
-const diaReserva = document.getElementById("fechaReserva");
-const respuestaFormulario = document.getElementById("respuestaFormulario");
 
-//ARMADO DEL PROGRAMA
+
+
+//CONTROLADOR
 let controlador = new Restaurante;
-formularioReserva.onsubmit = (e) => {
-    e.preventDefault();
-    controlador.cargarDatosReserva(nombrePersona.value, telefonoResponsable.value, cantPerReserva.value, diaReserva.value);
-    console.log(controlador)
-    respuestaFormulario.innerHTML = `Bienvenido ${nombrePersona.value} su reserva fue Registrada con exito`;
+
+
+//BOTON FORMULARIO
+const registarReserva = document.getElementById("registarReserva");
+registarReserva.onclick = () => {
+    //IMPRIMIR FORMULARIO
+    const mostrarFormulario = document.getElementById("formulario");
+    mostrarFormulario.innerHTML = `
+    <form id="formularioReservas">
+        <input id="nombreReserva" type="text" autocomplete="off" placeholder="Ingresar el nombre de la persona a cargo de la reserva" />
+        <input id="telefonoReserva" type="number" autocomplete="off" placeholder="Ingresar el telefono a cargo de la reserva" />
+        <input id="cantPersonasReservas" type="number" autocomplete="off" placeholder="Ingresar la cantidad de personas en la reserva" />
+        <input id="fechaReserva" type="date" autocomplete="off" placeholder="Ingresar el dia de la reserva (formato MM/DD/YYYY)" />
+        <input id="btn" type="submit" value="Agregar Reserva" />
+    </form>
+    `;
+    // TRAER DATOS DEL FORMULARIO DEL HTML
+    const nombrePersona = document.getElementById("nombreReserva");
+    const telefonoResponsable = document.getElementById("telefonoReserva");
+    const cantPerReserva = document.getElementById("cantPersonasReservas");
+    const diaReserva = document.getElementById("fechaReserva");
+    //RESPUESTA FORMULARIO
+    const respuestaFormulario = document.getElementById("formularioReservas")
+    respuestaFormulario.onsubmit = (e) => {
+        e.preventDefault();
+        if(controlador.cargarDatosReserva(nombrePersona.value, telefonoResponsable.value, cantPerReserva.value, diaReserva.value) == `true`){
+            console.log(controlador.cargarDatosReserva(nombrePersona.value, telefonoResponsable.value, cantPerReserva.value, diaReserva.value));
+            respuestaFormulario.innerHTML = `Bienvenido ${nombrePersona.value} su reserva fue Registrada con exito`;
+        }else if (controlador.cargarDatosReserva(nombrePersona.value, telefonoResponsable.value, cantPerReserva.value, diaReserva.value) == `false`){
+            respuestaFormulario.innerHTML = `Disculpe ${nombrePersona.value} su reserva no pudo ser registrada ya que el limite de Reservas por dia fue alcanzado`;
+        };
+        console.log(controlador);
+    }
 }
 
+//BOTON MOSTRAR RESERVAS
+const mostrarReservas = document.getElementById("mostrarReserva");
+const listaReservas = document.getElementById("mostrarReservasProximas");
+let i = 0;
+mostrarReservas.onclick = () => {
+    for (reservaProxima of controlador.mostrarProximasReservas()){
+        const listado = document.createElement('li');
+        listado.innerHTML =  `La proxima reserva esta a nombre de ${reservaProxima.nombreResponsable} para ${reservaProxima.cantPersonas} personas, para el ${reservaProxima.diaReserva}\n`;
+        listaReservas.append(listado);
+    }
+}
