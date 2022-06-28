@@ -13,6 +13,7 @@ class Restaurante{
         res.cargaDatos(nombre, telefono, cantPersonas, fecha);
         if (this.controlMaxReservas(res.diaReserva, res.cantPersonas) === 'true'){
             this.reservas.push(res);
+            localStorage.setItem(`reservas`, JSON.stringify(this.reservas));
             return `true`;
         }else{
             return `false`;
@@ -69,6 +70,19 @@ class Reserva{
 
 //CONTROLADOR
 let controlador = new Restaurante;
+
+//TRAER DATOS DEL STORAGE
+let reservasRecuperar = JSON.parse(localStorage.getItem(`reservas`));
+console.log(reservasRecuperar);
+if (!!reservasRecuperar && reservasRecuperar.length > 0) {
+    let i = 0;
+    for (const reserva of reservasRecuperar){
+        controlador.reservas[i] = reserva;
+        console.log(controlador.reservas[i]);
+        i++;
+    }
+}
+console.log(controlador);
 
 
 //BOTON FORMULARIO
