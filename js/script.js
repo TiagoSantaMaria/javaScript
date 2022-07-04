@@ -100,21 +100,46 @@ registarReserva.onclick = () => {
     </form>
     `;
     // TRAER DATOS DEL FORMULARIO DEL HTML
-    const nombrePersona = document.getElementById("nombreReserva");
-    const telefonoResponsable = document.getElementById("telefonoReserva");
-    const cantPerReserva = document.getElementById("cantPersonasReservas");
-    const diaReserva = document.getElementById("fechaReserva");
+    let nombrePersona = document.getElementById("nombreReserva");
+    let telefonoResponsable = document.getElementById("telefonoReserva");
+    let cantPerReserva = document.getElementById("cantPersonasReservas");
+    let diaReserva = document.getElementById("fechaReserva");
     //RESPUESTA FORMULARIO
     const respuestaFormulario = document.getElementById("formularioReservas")
     respuestaFormulario.onsubmit = (e) => {
         e.preventDefault();
-        if(controlador.cargarDatosReserva(nombrePersona.value, telefonoResponsable.value, cantPerReserva.value, diaReserva.value) == `true`){
-            console.log(controlador.cargarDatosReserva(nombrePersona.value, telefonoResponsable.value, cantPerReserva.value, diaReserva.value));
-            respuestaFormulario.innerHTML = `Bienvenido ${nombrePersona.value} su reserva fue Registrada con exito`;
-        }else if (controlador.cargarDatosReserva(nombrePersona.value, telefonoResponsable.value, cantPerReserva.value, diaReserva.value) == `false`){
-            respuestaFormulario.innerHTML = `Disculpe ${nombrePersona.value} su reserva no pudo ser registrada ya que el limite de Reservas por dia fue alcanzado`;
-        };
-        console.log(controlador);
+        //VALIDACIONES DATOS FORMULARIOS
+        nombrePersona.value = nombrePersona.value || "NO DEFINIDO";
+        telefonoResponsable.value = telefonoResponsable.value || 0;
+        cantPerReserva.value = cantPerReserva.value || 0;
+        diaReserva.value = diaReserva.value || "1000-01-01";
+        /////////////////////////////////
+
+        //ALERTS
+        Swal.fire({
+            title: 'Desea cargar la siguiente reserva?',
+            text: `|${nombrePersona.value}|${telefonoResponsable.value}|${cantPerReserva.value}|${diaReserva.value}|`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'CARGAR RESERVA'
+          }).then((result) => {
+            if (result.isConfirmed) {
+                if(controlador.cargarDatosReserva(nombrePersona.value, telefonoResponsable.value, cantPerReserva.value, diaReserva.value) == `true`){
+                    console.log(controlador.cargarDatosReserva(nombrePersona.value, telefonoResponsable.value, cantPerReserva.value, diaReserva.value));
+                    respuestaFormulario.innerHTML = `Bienvenido ${nombrePersona.value} su reserva fue Registrada con exito`;
+                    Swal.fire(
+                        `La reserva a nombre de ${nombrePersona.value} fue cargada con exito!`,
+                      )
+                }else if (controlador.cargarDatosReserva(nombrePersona.value, telefonoResponsable.value, cantPerReserva.value, diaReserva.value) == `false`){
+                    respuestaFormulario.innerHTML = `Disculpe ${nombrePersona.value} su reserva no pudo ser registrada ya que el limite de Reservas por dia fue alcanzado`;
+                    Swal.fire(
+                        `La reserva a nombre de ${nombrePersona.value} no pudo ser cargada por limite de capacidad!`,
+                      )
+                };
+            }
+          })
     }
 }
 
