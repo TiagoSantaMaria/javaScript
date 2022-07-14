@@ -1,0 +1,26 @@
+[
+    {
+    "reservaPendiente":"true",
+    "nombreReserva":"Gustavo",
+    "telReserva":"2477345657",
+    "cantPersonas":8,
+    "diaReserva":"2022-09-10T00:00:00.000Z"},
+    {
+    "reservaPendiente":"true",
+    "nombreReserva":"Catalina",
+    "telReserva":"2477341325",
+    "cantPersonas":12,
+    "diaReserva":"2022-09-18T00:00:00.000Z"},
+    {
+    "reservaPendiente":"true",
+    "nombreReserva":"Facundo",
+    "telReserva":"2477331325",
+    "cantPersonas":15,
+    "diaReserva":"2022-09-18T00:00:00.000Z"},
+    {
+    "reservaPendiente":"true",
+    "nombreReserva":"Maria",
+    "telReserva":"2477349800",
+    "cantPersonas":5,
+    "diaReserva":"2022-09-18T00:00:00.000Z"}
+]

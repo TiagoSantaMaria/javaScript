@@ -4,14 +4,15 @@ class Restaurante{
         this.direccion = `Siria 381`;
         this.usuario = `session`;
         this.clave = `123`;
-        this.reservasMaxPorDia = 30;
+        this.reservasMaxPorDia = 45;
         this.reservas = [];
     }
 
+// METODOS PARA REGISTRAR NUEVA RESERVA
     cargarDatosReserva(nombre, telefono, cantPersonas, fecha){
         let res = new Reserva();
         res.cargaDatos(nombre, telefono, cantPersonas, fecha);
-        if (this.controlMaxReservas(res.diaReserva, res.cantPersonas) === 'true'){
+        if (this.controlMaxReservas(res.diaReserva, parseInt(res.cantPersonas)) === 'true'){
             this.reservas.push(res);
             localStorage.setItem(`reservas`, JSON.stringify(this.reservas));
             return `true`;
@@ -19,14 +20,21 @@ class Restaurante{
             return `false`;
         }
     }
-/*
-    confirmarReserva(){
-        let nombreReserva = prompt(`Ingrese el nombre del dueño de la reserva:`);
-        let reservaCompletada = this.reservas.find(reservaPen => reservaPen.nombreResponsable === nombreReserva);
-        const index = this.reservas.indexOf(reservaCompletada);
-        this.reservas[index].reservaPendiente = 'false';
+
+    // VERIFICA QUE NO SE EXCEDA EL LIMITE DIARIO
+    controlMaxReservas(fechaCorrienteReserva,cantPersonas){
+        let capacidadAcumulada = cantPersonas;
+        this.reservas.forEach( reserva => {
+            if (reserva.diaReserva === fechaCorrienteReserva.toISOString()){
+                capacidadAcumulada =  capacidadAcumulada + parseInt(reserva.cantPersonas);
+            }
+        });
+        if (capacidadAcumulada <= this.reservasMaxPorDia){
+            return 'true';
+        }
     }
-    */
+    //------------------------
+// -----------------------
 
     mostrarProximasReservas(){
         const reservasProximas = this.reservas.filter(reservasProx => reservasProx.reservaPendiente === 'true');
@@ -35,61 +43,68 @@ class Restaurante{
         return reservasProximas;
     }
 
-    controlMaxReservas(fechaCorrienteReserva,cantPersonas){
-        let capacidadAcumulada = cantPersonas;
-        this.reservas.forEach( reserva => {
-            if (reserva.diaReserva.getTime() === fechaCorrienteReserva.getTime()){
-                capacidadAcumulada =  capacidadAcumulada + reserva.cantPersonas;
-            }
-        })
-        if (capacidadAcumulada <= this.reservasMaxPorDia){
-            return 'true';
-        }
+/*
+    confirmarReserva(){
+        let nombreReserva = prompt(`Ingrese el nombre del dueño de la reserva:`);
+        let reservaCompletada = this.reservas.find(reservaPen => reservaPen.nombreResponsable === nombreReserva);
+        const index = this.reservas.indexOf(reservaCompletada);
+        this.reservas[index].reservaPendiente = 'false';
     }
+*/
 }
 
 class Reserva{
     constructor(){
-        this.nombreResponsable;
-        this.telResponsable;
+        this.nombreReserva;
+        this.telReserva;
         this.cantPersonas;
         this.diaReserva;
-        this.diaPedidoReserva;
         this.reservaPendiente = 'true';
     }
     cargaDatos(nombre, telefono, cantPersonasReserva, fecha){
-        this.nombreResponsable = nombre;
-        this.telResponsable = telefono;
-        this.cantPersonas = cantPersonasReserva;
+        this.nombreReserva = nombre;
+        this.telReserva = telefono;
+        this.cantPersonas = parseInt(cantPersonasReserva);
         this.diaReserva = new Date(fecha);
     }
 }
 
+//DOM
+const mostrarFormulario = document.getElementById("formulario");
+const registarReserva = document.getElementById("registarReserva");
 
 
-
-//CONTROLADOR
-let controlador = new Restaurante;
-
-//TRAER DATOS DEL STORAGE
-let reservasRecuperar = JSON.parse(localStorage.getItem(`reservas`));
-console.log(reservasRecuperar);
-if (!!reservasRecuperar && reservasRecuperar.length > 0) {
-    let i = 0;
-    for (const reserva of reservasRecuperar){
-        controlador.reservas[i] = reserva;
-        console.log(controlador.reservas[i]);
-        i++;
+//FUNCIONES
+const reservasStorage = () =>{
+    let reservasRecuperar = JSON.parse(localStorage.getItem(`reservas`));
+    if (!!reservasRecuperar && reservasRecuperar.length > 0) {
+        let i = 0;
+        for (const reserva of reservasRecuperar){
+            controlador.reservas[i] = reserva;
+            console.log(controlador.reservas[i]);
+            i++;
+        }
     }
 }
-console.log(controlador);
 
+const obtenerReservaAsync = async () => {
+    try{        
+        const reservasFetch = await fetch('./json/reservas.json');
+        const reservasBack = await reservasFetch.json(); 
+        let i = 0;
+        for (const reserva of reservasBack){
+            // const {nombre, telefono, cantPer, diaRes, reservaPen} = reserva;
+            controlador.reservas[i] = reserva;
+            i++;
+        }
+        console.log(controlador);
+    } catch{
+        mostrarFormulario.innerHTML = 'Fallo al recuperar Reservas del Back';
+    }finally{
+    }
+}
 
-//BOTON FORMULARIO
-const registarReserva = document.getElementById("registarReserva");
-registarReserva.onclick = () => {
-    //IMPRIMIR FORMULARIO
-    const mostrarFormulario = document.getElementById("formulario");
+const imprimirFormulario = () =>{
     mostrarFormulario.innerHTML = `
     <form id="formularioReservas">
         <input id="nombreReserva" type="text" autocomplete="off" placeholder="Ingresar el nombre de la persona a cargo de la reserva" />
@@ -99,7 +114,23 @@ registarReserva.onclick = () => {
         <input id="btn" type="submit" value="Agregar Reserva" />
     </form>
     `;
-    // TRAER DATOS DEL FORMULARIO DEL HTML
+}
+
+//--------------
+
+
+//CONTROLADOR
+let controlador = new Restaurante;
+
+//TRAER DATOS DEL STORAGE
+reservasStorage();
+obtenerReservaAsync();
+
+//BOTON REGISTRAR NUEVA RESERVA
+registarReserva.onclick = () => {
+    //IMPRIMIR FORMULARIO
+    imprimirFormulario();
+    // RELACIONAR DATOS DEL DOM 'FORMULARIO'
     let nombrePersona = document.getElementById("nombreReserva");
     let telefonoResponsable = document.getElementById("telefonoReserva");
     let cantPerReserva = document.getElementById("cantPersonasReservas");
@@ -107,7 +138,7 @@ registarReserva.onclick = () => {
     //RESPUESTA FORMULARIO
     const respuestaFormulario = document.getElementById("formularioReservas")
     respuestaFormulario.onsubmit = (e) => {
-        e.preventDefault();
+        e.preventDefault();  
         //VALIDACIONES DATOS FORMULARIOS
         nombrePersona.value = nombrePersona.value || "NO DEFINIDO";
         telefonoResponsable.value = telefonoResponsable.value || 0;
@@ -124,24 +155,25 @@ registarReserva.onclick = () => {
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
             confirmButtonText: 'CARGAR RESERVA'
-          }).then((result) => {
+        }).then((result) => {
             if (result.isConfirmed) {
-                if(controlador.cargarDatosReserva(nombrePersona.value, telefonoResponsable.value, cantPerReserva.value, diaReserva.value) == `true`){
-                    console.log(controlador.cargarDatosReserva(nombrePersona.value, telefonoResponsable.value, cantPerReserva.value, diaReserva.value));
+                if(controlador.cargarDatosReserva(nombrePersona.value, telefonoResponsable.value, parseInt(cantPerReserva.value), diaReserva.value) == `true`){                    
                     respuestaFormulario.innerHTML = `Bienvenido ${nombrePersona.value} su reserva fue Registrada con exito`;
                     Swal.fire(
                         `La reserva a nombre de ${nombrePersona.value} fue cargada con exito!`,
-                      )
+                    )
                 }else if (controlador.cargarDatosReserva(nombrePersona.value, telefonoResponsable.value, cantPerReserva.value, diaReserva.value) == `false`){
                     respuestaFormulario.innerHTML = `Disculpe ${nombrePersona.value} su reserva no pudo ser registrada ya que el limite de Reservas por dia fue alcanzado`;
                     Swal.fire(
                         `La reserva a nombre de ${nombrePersona.value} no pudo ser cargada por limite de capacidad!`,
-                      )
+                    )
                 };
             }
-          })
+        })
     }
+    console.log(controlador);
 }
+
 
 //BOTON MOSTRAR RESERVAS
 const mostrarReservas = document.getElementById("mostrarReserva");
@@ -150,7 +182,7 @@ let i = 0;
 mostrarReservas.onclick = () => {
     for (reservaProxima of controlador.mostrarProximasReservas()){
         const listado = document.createElement('li');
-        listado.innerHTML =  `La proxima reserva esta a nombre de ${reservaProxima.nombreResponsable} para ${reservaProxima.cantPersonas} personas, para el ${reservaProxima.diaReserva}\n`;
+        listado.innerHTML =  `La proxima reserva esta a nombre de ${reservaProxima.nombreReserva} para ${reservaProxima.cantPersonas} personas, para el ${reservaProxima.diaReserva}\n`;
         listaReservas.append(listado);
     }
 }
