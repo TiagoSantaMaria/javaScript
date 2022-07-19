@@ -71,10 +71,17 @@ class Reserva{
 
 //DOM
 const mostrarFormulario = document.getElementById("formulario");
+const volverMenuPrincipal = document.getElementById("volverMenuPrincipal");
 const registarReserva = document.getElementById("registarReserva");
 
 
 //FUNCIONES
+const volverAlMenuPrincipal = () =>{
+    volverMenuPrincipal.onclick = () =>{
+        location.reload();
+    };
+}
+
 const reservasStorage = () =>{
     let reservasRecuperar = JSON.parse(localStorage.getItem(`reservas`));
     if (!!reservasRecuperar && reservasRecuperar.length > 0) {
@@ -106,18 +113,17 @@ const obtenerReservaAsync = async () => {
 
 const imprimirFormulario = () =>{
     mostrarFormulario.innerHTML = `
-    <form id="formularioReservas">
+    <form id="formularioReservas" class="formularioReserva">
         <input id="nombreReserva" type="text" autocomplete="off" placeholder="Ingresar el nombre de la persona a cargo de la reserva" />
         <input id="telefonoReserva" type="number" autocomplete="off" placeholder="Ingresar el telefono a cargo de la reserva" />
         <input id="cantPersonasReservas" type="number" autocomplete="off" placeholder="Ingresar la cantidad de personas en la reserva" />
         <input id="fechaReserva" type="date" autocomplete="off" placeholder="Ingresar el dia de la reserva (formato MM/DD/YYYY)" />
         <input id="btn" type="submit" value="Agregar Reserva" />
     </form>
+    <button id = "volverMenuPrincipal" class="">Volver al Menu Principal</button>
     `;
 }
-
 //--------------
-
 
 //CONTROLADOR
 let controlador = new Restaurante;
@@ -128,6 +134,10 @@ obtenerReservaAsync();
 
 //BOTON REGISTRAR NUEVA RESERVA
 registarReserva.onclick = () => {
+    let elemento1 = document.getElementById("registarReserva");
+    let elemento2 = document.getElementById("mostrarReserva");
+    elemento1.className = "desactivoDisplay";
+    elemento2.className = "desactivoDisplay";
     //IMPRIMIR FORMULARIO
     imprimirFormulario();
     // RELACIONAR DATOS DEL DOM 'FORMULARIO'
@@ -145,7 +155,6 @@ registarReserva.onclick = () => {
         cantPerReserva.value = cantPerReserva.value || 0;
         diaReserva.value = diaReserva.value || "1000-01-01";
         /////////////////////////////////
-
         //ALERTS
         Swal.fire({
             title: 'Desea cargar la siguiente reserva?',
@@ -158,17 +167,16 @@ registarReserva.onclick = () => {
         }).then((result) => {
             if (result.isConfirmed) {
                 if(controlador.cargarDatosReserva(nombrePersona.value, telefonoResponsable.value, parseInt(cantPerReserva.value), diaReserva.value) == `true`){                    
-                    respuestaFormulario.innerHTML = `Bienvenido ${nombrePersona.value} su reserva fue Registrada con exito`;
                     Swal.fire(
                         `La reserva a nombre de ${nombrePersona.value} fue cargada con exito!`,
+                        setInterval("location.reload()",2000)
                     )
                 }else if (controlador.cargarDatosReserva(nombrePersona.value, telefonoResponsable.value, cantPerReserva.value, diaReserva.value) == `false`){
-                    respuestaFormulario.innerHTML = `Disculpe ${nombrePersona.value} su reserva no pudo ser registrada ya que el limite de Reservas por dia fue alcanzado`;
                     Swal.fire(
                         `La reserva a nombre de ${nombrePersona.value} no pudo ser cargada por limite de capacidad!`,
                     )
                 };
-            }
+            }   
         })
     }
     console.log(controlador);
