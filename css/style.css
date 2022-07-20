@@ -50,6 +50,16 @@ body {
     cursor: pointer;
 }
 
+.botonMenuPrincipal{
+    grid-column: 2/3;
+    grid-row: 4/4;
+    width: 25vw;
+    height: 7vh;
+}
+.botonMenuPrincipal:hover{
+    cursor: pointer;
+}
+
 
 .formularioPP{
     

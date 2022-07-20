@@ -69,18 +69,19 @@ class Reserva{
     }
 }
 
+//FECHAS
+const DateTime = luxon.DateTime;
+const hoy = DateTime.now();
+console.log(hoy.toString());
+
 //DOM
 const mostrarFormulario = document.getElementById("formulario");
 const volverMenuPrincipal = document.getElementById("volverMenuPrincipal");
 const registarReserva = document.getElementById("registarReserva");
 
 
+
 //FUNCIONES
-const volverAlMenuPrincipal = () =>{
-    volverMenuPrincipal.onclick = () =>{
-        location.reload();
-    };
-}
 
 const reservasStorage = () =>{
     let reservasRecuperar = JSON.parse(localStorage.getItem(`reservas`));
@@ -120,9 +121,17 @@ const imprimirFormulario = () =>{
         <input id="fechaReserva" type="date" autocomplete="off" placeholder="Ingresar el dia de la reserva (formato MM/DD/YYYY)" />
         <input id="btn" type="submit" value="Agregar Reserva" />
     </form>
-    <button id = "volverMenuPrincipal" class="">Volver al Menu Principal</button>
     `;
 }
+
+const fechaVieja = (fechaPedida) =>{
+    if (fechaPedida > hoy.toString()){
+        return false;
+    }else{
+        return true;
+    }
+}
+
 //--------------
 
 //CONTROLADOR
@@ -136,8 +145,9 @@ obtenerReservaAsync();
 registarReserva.onclick = () => {
     let elemento1 = document.getElementById("registarReserva");
     let elemento2 = document.getElementById("mostrarReserva");
-    elemento1.className = "desactivoDisplay";
-    elemento2.className = "desactivoDisplay";
+    elemento1.classList.add("desactivoDisplay");
+    elemento2.classList.add("desactivoDisplay");
+    volverMenuPrincipal.classList.remove("desactivoDisplay");
     //IMPRIMIR FORMULARIO
     imprimirFormulario();
     // RELACIONAR DATOS DEL DOM 'FORMULARIO'
@@ -154,33 +164,43 @@ registarReserva.onclick = () => {
         telefonoResponsable.value = telefonoResponsable.value || 0;
         cantPerReserva.value = cantPerReserva.value || 0;
         diaReserva.value = diaReserva.value || "1000-01-01";
-        /////////////////////////////////
-        //ALERTS
-        Swal.fire({
-            title: 'Desea cargar la siguiente reserva?',
-            text: `|${nombrePersona.value}|${telefonoResponsable.value}|${cantPerReserva.value}|${diaReserva.value}|`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'CARGAR RESERVA'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                if(controlador.cargarDatosReserva(nombrePersona.value, telefonoResponsable.value, parseInt(cantPerReserva.value), diaReserva.value) == `true`){                    
-                    Swal.fire(
-                        `La reserva a nombre de ${nombrePersona.value} fue cargada con exito!`,
-                        setInterval("location.reload()",2000)
-                    )
-                }else if (controlador.cargarDatosReserva(nombrePersona.value, telefonoResponsable.value, cantPerReserva.value, diaReserva.value) == `false`){
-                    Swal.fire(
-                        `La reserva a nombre de ${nombrePersona.value} no pudo ser cargada por limite de capacidad!`,
-                    )
-                };
-            }   
-        })
+        if (fechaVieja(diaReserva.value) === false){
+            Swal.fire({
+                title: 'Desea cargar la siguiente reserva?',
+                text: `|${nombrePersona.value}|${telefonoResponsable.value}|${cantPerReserva.value}|${diaReserva.value}|`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'CARGAR RESERVA'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    if(controlador.cargarDatosReserva(nombrePersona.value, telefonoResponsable.value, parseInt(cantPerReserva.value), diaReserva.value) == `true`){                    
+                        Swal.fire(
+                            `La reserva a nombre de ${nombrePersona.value} fue cargada con exito!`,
+                            setInterval("location.reload()",2000)
+                        )
+                    }else if (controlador.cargarDatosReserva(nombrePersona.value, telefonoResponsable.value, cantPerReserva.value, diaReserva.value) == `false`){
+                        Swal.fire(
+                            `La reserva a nombre de ${nombrePersona.value} no pudo ser cargada por limite de capacidad!`,
+                        )
+                    };
+                }   
+            })
+        }else{
+            Swal.fire(
+                `RECUERDE QUE LA FECHA DEBE SER A FUTURA, NO DE DIAS ANTERIORES U HOY!`
+            )
+        }
     }
     console.log(controlador);
 }
+
+//BOTON MENU PRINCIPAL
+volverMenuPrincipal.onclick = () =>{
+    location.reload();
+};
+
 
 
 //BOTON MOSTRAR RESERVAS
