@@ -1,3 +1,9 @@
+*{
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    text-decoration: none;
+}
 body {
     min-height: 100vh;
     background: url(../images/pexels-photo-941861.jpeg);
@@ -11,15 +17,15 @@ body {
     display: none;
 }
 
+/*Seccion Pagina Principal*/
 .usoGrid{
     display: grid;
-    grid-template-rows: repeat(5, 1fr);
+    grid-template-rows: repeat(6, 1fr);
     grid-template-columns: repeat(3, 1fr);
     align-items: center;
     justify-items: center;
     width: 100%;
 }
-
 .tituloPagina{
     grid-column: 2/3;
     grid-row: 1/2;
@@ -29,40 +35,38 @@ body {
     height: 40px;
     text-align: center;
 }
+.botonMenuPrincipalRegistrarReserva{
+    grid-column: 2/3;
+    grid-row: 4/4;
+    width: 25vw;
+    height: 7vh;
+}
+.botonMenuPrincipalRegistrarReserva:hover{
+    cursor: pointer;
+}
+
+/* Seccion Registrar Reserva*/
 .botonRegistrarReserva{
     justify-content: center;
     grid-column: 2/3;
-    grid-row:2/3;
+    grid-row:4/5;
     width: 25vw;
     height: 7vh;
 }
 .botonRegistrarReserva:hover{
     cursor: pointer;
 }
-
 .botonMostrarReserva{
     grid-column: 2/3;
-    grid-row: 3/4;
+    grid-row: 6/7;
     width: 25vw;
     height: 7vh;
 }
 .botonMostrarReserva:hover{
     cursor: pointer;
 }
-
-.botonMenuPrincipal{
-    grid-column: 2/3;
-    grid-row: 4/4;
-    width: 25vw;
-    height: 7vh;
-}
-.botonMenuPrincipal:hover{
-    cursor: pointer;
-}
-
-
 .formularioPP{
-    
+    grid-row: 2/3;
     grid-column:2/3;
     width: 25vw;
     height: 10vh;
@@ -71,4 +75,28 @@ body {
     background-color: rgb(255, 0, 0);
     display: flex;
     flex-direction: column;
-}   
+    grid-column:2/3;
+    grid-row: 2/3;
+} 
+/*Seccion Mostrar Reservas*/
+.reservasProximas{
+    background-color: rgb(255, 203, 203);
+    grid-column: 2/3;
+    grid-row: 2/5;
+    width: max-content;
+    border-radius: 10px;
+}
+.reservasProximas li{
+    padding: 1px;
+    margin: 7.5px;
+    color: rgb(0, 0, 0);
+}
+.botonMenuPrincipalMostrarReservas{
+    grid-column: 2/3;
+    grid-row: 5/6;
+    width: 25vw;
+    height: 7vh;
+}
+.botonMenuPrincipalMostrarReservas:hover{
+    cursor: pointer;
+}

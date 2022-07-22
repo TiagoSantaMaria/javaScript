@@ -10,13 +10,13 @@
     "nombreReserva":"Catalina",
     "telReserva":"2477341325",
     "cantPersonas":12,
-    "diaReserva":"2022-09-18T00:00:00.000Z"},
+    "diaReserva":"2022-09-28T00:00:00.000Z"},
     {
     "reservaPendiente":"true",
     "nombreReserva":"Facundo",
     "telReserva":"2477331325",
     "cantPersonas":15,
-    "diaReserva":"2022-09-18T00:00:00.000Z"},
+    "diaReserva":"2022-09-26T00:00:00.000Z"},
     {
     "reservaPendiente":"true",
     "nombreReserva":"Maria",

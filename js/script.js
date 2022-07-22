@@ -35,10 +35,17 @@ class Restaurante{
     }
     //------------------------
 // -----------------------
+respuestaFormulario
 
     mostrarProximasReservas(){
         const reservasProximas = this.reservas.filter(reservasProx => reservasProx.reservaPendiente === 'true');
-        reservasProximas.sort((a, b) => a.diaReserva - b.diaReserva);
+        reservasProximas.sort(function(a, b){
+            let primerFecha = new Date(a.diaReserva);
+            let segundaFecha = new Date(b.diaReserva);
+            if (primerFecha < segundaFecha) return -1;
+            if (primerFecha > segundaFecha) return 1;
+            return 0;
+        });
         console.log(reservasProximas);
         return reservasProximas;
     }
@@ -72,7 +79,6 @@ class Reserva{
 //FECHAS
 const DateTime = luxon.DateTime;
 const hoy = DateTime.now();
-console.log(hoy.toString());
 
 //DOM
 const mostrarFormulario = document.getElementById("formulario");
@@ -89,7 +95,6 @@ const reservasStorage = () =>{
         let i = 0;
         for (const reserva of reservasRecuperar){
             controlador.reservas[i] = reserva;
-            console.log(controlador.reservas[i]);
             i++;
         }
     }
@@ -105,7 +110,6 @@ const obtenerReservaAsync = async () => {
             controlador.reservas[i] = reserva;
             i++;
         }
-        console.log(controlador);
     } catch{
         mostrarFormulario.innerHTML = 'Fallo al recuperar Reservas del Back';
     }finally{
@@ -148,6 +152,8 @@ registarReserva.onclick = () => {
     elemento1.classList.add("desactivoDisplay");
     elemento2.classList.add("desactivoDisplay");
     volverMenuPrincipal.classList.remove("desactivoDisplay");
+    volverMenuPrincipal.classList.add("botonMenuPrincipalRegistrarReserva");
+    mostrarFormulario.classList.add("formularioPP");
     //IMPRIMIR FORMULARIO
     imprimirFormulario();
     // RELACIONAR DATOS DEL DOM 'FORMULARIO'
@@ -208,9 +214,19 @@ const mostrarReservas = document.getElementById("mostrarReserva");
 const listaReservas = document.getElementById("mostrarReservasProximas");
 let i = 0;
 mostrarReservas.onclick = () => {
+    let elemento1 = document.getElementById("registarReserva");
+    let elemento2 = document.getElementById("mostrarReserva");
+    elemento1.classList.add("desactivoDisplay");
+    elemento2.classList.add("desactivoDisplay");
+    volverMenuPrincipal.classList.remove("desactivoDisplay");
+    volverMenuPrincipal.classList.add("botonMenuPrincipalMostrarReservas");
+    
     for (reservaProxima of controlador.mostrarProximasReservas()){
         const listado = document.createElement('li');
-        listado.innerHTML =  `La proxima reserva esta a nombre de ${reservaProxima.nombreReserva} para ${reservaProxima.cantPersonas} personas, para el ${reservaProxima.diaReserva}\n`;
+        let fecha = new Date(reservaProxima.diaReserva);
+        listado.innerHTML =  `La proxima reserva esta a nombre de ${reservaProxima.nombreReserva} para ${reservaProxima.cantPersonas} personas, para el ${fecha.toLocaleDateString()}\n`;
         listaReservas.append(listado);
     }
 }
+
+console.log(controlador);
