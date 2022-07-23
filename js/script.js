@@ -9,9 +9,9 @@ class Restaurante{
     }
 
 // METODOS PARA REGISTRAR NUEVA RESERVA
-    cargarDatosReserva(nombre, telefono, cantPersonas, fecha){
+    cargarDatosReserva(nombre, telefono, cantPersonas, horaReserva, fecha){
         let res = new Reserva();
-        res.cargaDatos(nombre, telefono, cantPersonas, fecha);
+        res.cargaDatos(nombre, telefono, cantPersonas, horaReserva,fecha);
         if (this.controlMaxReservas(res.diaReserva, parseInt(res.cantPersonas)) === 'true'){
             this.reservas.push(res);
             localStorage.setItem(`reservas`, JSON.stringify(this.reservas));
@@ -66,12 +66,14 @@ class Reserva{
         this.telReserva;
         this.cantPersonas;
         this.diaReserva;
+        this.horaReserva;
         this.reservaPendiente = 'true';
     }
-    cargaDatos(nombre, telefono, cantPersonasReserva, fecha){
+    cargaDatos(nombre, telefono, cantPersonasReserva, hora, fecha){
         this.nombreReserva = nombre;
         this.telReserva = telefono;
         this.cantPersonas = parseInt(cantPersonasReserva);
+        this.horaReserva = hora;
         this.diaReserva = new Date(fecha);
     }
 }
@@ -122,6 +124,17 @@ const imprimirFormulario = () =>{
         <input id="nombreReserva" type="text" autocomplete="off" placeholder="Ingresar el nombre de la persona a cargo de la reserva" />
         <input id="telefonoReserva" type="number" autocomplete="off" placeholder="Ingresar el telefono a cargo de la reserva" />
         <input id="cantPersonasReservas" type="number" autocomplete="off" placeholder="Ingresar la cantidad de personas en la reserva" />
+        <select name="mes" id="horaReserva" class="form-select">
+            <option selected>Horario de Reserva</option>
+            <option value="12.30">12.30 HS</option>
+            <option value="13">13 HS</option>
+            <option value="13.30">13.30 HS</option>
+            <option value="14">14 HS</option>
+            <option value="20.30">20.30 HS</option>
+            <option value="21">21 HS</option>
+            <option value="21.30">21.30 HS</option>
+            <option value="22">22 HS</option>                                
+        </select>
         <input id="fechaReserva" type="date" autocomplete="off" placeholder="Ingresar el dia de la reserva (formato MM/DD/YYYY)" />
         <input id="btn" type="submit" value="Agregar Reserva" />
     </form>
@@ -129,7 +142,7 @@ const imprimirFormulario = () =>{
 }
 
 const fechaVieja = (fechaPedida) =>{
-    if (fechaPedida > hoy.toString()){
+    if (fechaPedida >= hoy.toString()){
         return false;
     }else{
         return true;
@@ -161,6 +174,7 @@ registarReserva.onclick = () => {
     let telefonoResponsable = document.getElementById("telefonoReserva");
     let cantPerReserva = document.getElementById("cantPersonasReservas");
     let diaReserva = document.getElementById("fechaReserva");
+    let horaReserva = document.getElementById("horaReserva");
     //RESPUESTA FORMULARIO
     const respuestaFormulario = document.getElementById("formularioReservas")
     respuestaFormulario.onsubmit = (e) => {
@@ -169,11 +183,12 @@ registarReserva.onclick = () => {
         nombrePersona.value = nombrePersona.value || "NO DEFINIDO";
         telefonoResponsable.value = telefonoResponsable.value || 0;
         cantPerReserva.value = cantPerReserva.value || 0;
+        horaReserva.value = horaReserva.value || 0; 
         diaReserva.value = diaReserva.value || "1000-01-01";
         if (fechaVieja(diaReserva.value) === false){
             Swal.fire({
                 title: 'Desea cargar la siguiente reserva?',
-                text: `|${nombrePersona.value}|${telefonoResponsable.value}|${cantPerReserva.value}|${diaReserva.value}|`,
+                text: `|${nombrePersona.value}|${telefonoResponsable.value}|${cantPerReserva.value}|${diaReserva.value}|${horaReserva.value}|`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -181,7 +196,7 @@ registarReserva.onclick = () => {
                 confirmButtonText: 'CARGAR RESERVA'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    if(controlador.cargarDatosReserva(nombrePersona.value, telefonoResponsable.value, parseInt(cantPerReserva.value), diaReserva.value) == `true`){                    
+                    if(controlador.cargarDatosReserva(nombrePersona.value, telefonoResponsable.value, parseInt(cantPerReserva.value), horaReserva.value, diaReserva.value) == `true`){                    
                         Swal.fire(
                             `La reserva a nombre de ${nombrePersona.value} fue cargada con exito!`,
                             setInterval("location.reload()",2000)
@@ -222,11 +237,15 @@ mostrarReservas.onclick = () => {
     volverMenuPrincipal.classList.add("botonMenuPrincipalMostrarReservas");
     
     for (reservaProxima of controlador.mostrarProximasReservas()){
-        const listado = document.createElement('li');
         let fecha = new Date(reservaProxima.diaReserva);
-        listado.innerHTML =  `La proxima reserva esta a nombre de ${reservaProxima.nombreReserva} para ${reservaProxima.cantPersonas} personas, para el ${fecha.toLocaleDateString()}\n`;
+        fecha.setDate(fecha.getDate() + 1);
+        const listado = document.createElement('li');
+        if (fecha.toLocaleDateString() == hoy.toLocaleString()){
+            listado.innerHTML =  `RESERVA HOY a nombre de ${reservaProxima.nombreReserva} para ${reservaProxima.cantPersonas} personas, para el ${fecha.toLocaleDateString()} -- ${reservaProxima.horaReserva}\n`;
+        }else{
+            listado.innerHTML =  `La proxima reserva esta a nombre de ${reservaProxima.nombreReserva} para ${reservaProxima.cantPersonas} personas, para el ${fecha.toLocaleDateString()} -- HORA: ${reservaProxima.horaReserva}HS \n`;
+        }
         listaReservas.append(listado);
     }
 }
-
 console.log(controlador);
