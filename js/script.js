@@ -148,6 +148,14 @@ const fechaVieja = (fechaPedida) =>{
         return true;
     }
 }
+const asignarDom = (boton) =>{
+    for(let i=0; i < controlador.reservas.length; i++){
+        boton[i] = document.getElementById(`botonReserva${i}`);
+        console.log(boton[i]);
+    }
+    return boton;
+}
+
 
 //--------------
 
@@ -227,7 +235,7 @@ volverMenuPrincipal.onclick = () =>{
 //BOTON MOSTRAR RESERVAS
 const mostrarReservas = document.getElementById("mostrarReserva");
 const listaReservas = document.getElementById("mostrarReservasProximas");
-let i = 0;
+let i = 0; //CREO QUE ESTA DE MAS
 mostrarReservas.onclick = () => {
     let elemento1 = document.getElementById("registarReserva");
     let elemento2 = document.getElementById("mostrarReserva");
@@ -235,17 +243,62 @@ mostrarReservas.onclick = () => {
     elemento2.classList.add("desactivoDisplay");
     volverMenuPrincipal.classList.remove("desactivoDisplay");
     volverMenuPrincipal.classList.add("botonMenuPrincipalMostrarReservas");
-    
+    let i=0;
     for (reservaProxima of controlador.mostrarProximasReservas()){
+        controlador.reservas[i] = reservaProxima;
         let fecha = new Date(reservaProxima.diaReserva);
         fecha.setDate(fecha.getDate() + 1);
         const listado = document.createElement('li');
         if (fecha.toLocaleDateString() == hoy.toLocaleString()){
-            listado.innerHTML =  `RESERVA HOY a nombre de ${reservaProxima.nombreReserva} para ${reservaProxima.cantPersonas} personas, para el ${fecha.toLocaleDateString()} -- ${reservaProxima.horaReserva}\n`;
+            listado.innerHTML =  `RESERVA HOY a nombre de ${reservaProxima.nombreReserva} para ${reservaProxima.cantPersonas} personas, para el ${fecha.toLocaleDateString()} -- HORA: ${reservaProxima.horaReserva}HS\n`;
         }else{
-            listado.innerHTML =  `La proxima reserva esta a nombre de ${reservaProxima.nombreReserva} para ${reservaProxima.cantPersonas} personas, para el ${fecha.toLocaleDateString()} -- HORA: ${reservaProxima.horaReserva}HS \n`;
+            listado.innerHTML =  `La proxima reserva esta a nombre de ${reservaProxima.nombreReserva} para ${reservaProxima.cantPersonas} personas, para el ${fecha.toLocaleDateString()} -- HORA: ${reservaProxima.horaReserva}HS <button id = "botonReserva${i}" value="${i}" class="botonCancelarReserva"></button>\n`;
         }
+        i+=1;
+        console.log (i);
         listaReservas.append(listado);
     }
+    let botonReserva = [];
+    asignarDom(botonReserva);
+    asignarEvento(botonReserva);
 }
+
+
+
+const asignarEvento = (boton) =>{
+    for(let i=0; i < controlador.reservas.length; i++){
+        boton[i].onclick = () =>{
+            const botonBorrarReserva = document.createElement('div');
+            botonBorrarReserva.innerHTML = `<button id = "borrarReserva" value="" class="botonCancelarReservaDefinitivo">BORRAR RESERVA de ${controlador.reservas[i].nombreReserva}</button>`
+            listaReservas.append(botonBorrarReserva);
+            let indice = boton[i].value;
+            const borrarReserva = document.getElementById("borrarReserva");
+            borrarReserva.onclick = () =>{
+                Swal.fire({
+                    title: `Desea borrar la resera de ${controlador.reservas[i].nombreReserva}?`,
+                    text: "Una vez borrada no se podra recuperar!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes!'
+                  }).then((result) => {
+                    if (result.isConfirmed) {
+                        //ACA SEGUIR PARA BORRAR
+                      Swal.fire(
+                        'Deleted!',
+                        'Your file has been deleted.',
+                        'success'
+                      )
+                    }
+                  })
+            }
+            console.log(indice);
+
+        }
+    }
+}
+
+
+
 console.log(controlador);

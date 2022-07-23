@@ -87,6 +87,7 @@ body {
     grid-row: 2/5;
     width: max-content;
     border-radius: 10px;
+    border: solid 2px;
 }
 .reservasProximas li{
     padding: 1px;
@@ -100,5 +101,27 @@ body {
     height: 7vh;
 }
 .botonMenuPrincipalMostrarReservas:hover{
+    cursor: pointer;
+}
+.botonCancelarReserva{
+    width: 15px;
+    height: 15px;
+    border: solid 1px;
+    background-color: rgba(9, 187, 39, 0.479);
+}
+.botonCancelarReserva:hover{
+    cursor: pointer;
+}
+.botonCancelarReservaDefinitivo{
+    grid-column: 2/3;
+    grid-row: 6/7;
+    width: 100px;
+    height: 40px;
+    margin-left: 280px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    background-color:wheat;
+}
+.botonCancelarReservaDefinitivo:hover{
     cursor: pointer;
 }
