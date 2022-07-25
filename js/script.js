@@ -35,9 +35,10 @@ class Restaurante{
     }
     //------------------------
 // -----------------------
-respuestaFormulario
+
 
     mostrarProximasReservas(){
+        console.log(this.reservas);
         const reservasProximas = this.reservas.filter(reservasProx => reservasProx.reservaPendiente === 'true');
         reservasProximas.sort(function(a, b){
             let primerFecha = new Date(a.diaReserva);
@@ -93,13 +94,20 @@ const registarReserva = document.getElementById("registarReserva");
 
 const reservasStorage = () =>{
     let reservasRecuperar = JSON.parse(localStorage.getItem(`reservas`));
+    console.log(reservasRecuperar);
     if (!!reservasRecuperar && reservasRecuperar.length > 0) {
         let i = 0;
         for (const reserva of reservasRecuperar){
+            console.log(i);
             controlador.reservas[i] = reserva;
+            console.log(controlador.reservas[i]);
             i++;
         }
+        console.log(controlador.reservas);
+    }else{
+        obtenerReservaAsync();
     }
+    console.log(controlador);
 }
 
 const obtenerReservaAsync = async () => {
@@ -141,8 +149,8 @@ const imprimirFormulario = () =>{
     `;
 }
 
-const fechaVieja = (fechaPedida) =>{
-    if (fechaPedida >= hoy.toString()){
+const fechaVieja = (fechaPedida, horaPedida) =>{
+    if ((fechaPedida > hoy.toString()) || ((fechaPedida === hoy.toString().substring(0,10) && horaPedida > hoy.hour))){
         return false;
     }else{
         return true;
@@ -164,7 +172,6 @@ let controlador = new Restaurante;
 
 //TRAER DATOS DEL STORAGE
 reservasStorage();
-obtenerReservaAsync();
 
 //BOTON REGISTRAR NUEVA RESERVA
 registarReserva.onclick = () => {
@@ -191,9 +198,10 @@ registarReserva.onclick = () => {
         nombrePersona.value = nombrePersona.value || "NO DEFINIDO";
         telefonoResponsable.value = telefonoResponsable.value || 0;
         cantPerReserva.value = cantPerReserva.value || 0;
-        horaReserva.value = horaReserva.value || 0; 
+        horaReserva.value = horaReserva.value || 0;
+        console.log(horaReserva.value); 
         diaReserva.value = diaReserva.value || "1000-01-01";
-        if (fechaVieja(diaReserva.value) === false){
+        if (fechaVieja(diaReserva.value, horaReserva.value) === false){
             Swal.fire({
                 title: 'Desea cargar la siguiente reserva?',
                 text: `|${nombrePersona.value}|${telefonoResponsable.value}|${cantPerReserva.value}|${diaReserva.value}|${horaReserva.value}|`,
@@ -218,7 +226,7 @@ registarReserva.onclick = () => {
             })
         }else{
             Swal.fire(
-                `RECUERDE QUE LA FECHA DEBE SER A FUTURA, NO DE DIAS ANTERIORES U HOY!`
+                `ESA FECHA ES VIEJA!!!`
             )
         }
     }
@@ -246,6 +254,7 @@ mostrarReservas.onclick = () => {
     let i=0;
     for (reservaProxima of controlador.mostrarProximasReservas()){
         controlador.reservas[i] = reservaProxima;
+        console.log(reservaProxima);
         let fecha = new Date(reservaProxima.diaReserva);
         fecha.setDate(fecha.getDate() + 1);
         const listado = document.createElement('li');
@@ -285,6 +294,11 @@ const asignarEvento = (boton) =>{
                   }).then((result) => {
                     if (result.isConfirmed) {
                         //ACA SEGUIR PARA BORRAR
+                        controlador.reservas.splice(i,1);
+                        console.log(controlador.reservas);
+                        localStorage.setItem(`reservas`, JSON.stringify(controlador.reservas));
+                        let reservasRecuperar2 = JSON.parse(localStorage.getItem(`reservas`));
+                        console.log(reservasRecuperar2);
                       Swal.fire(
                         'Deleted!',
                         'Your file has been deleted.',
