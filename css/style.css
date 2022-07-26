@@ -39,12 +39,14 @@ body {
 }
 .botonMenuPrincipalRegistrarReserva{
     grid-column: 2/3;
-    grid-row: 4/4;
+    grid-row: 6/6;
     width: 25vw;
     height: 7vh;
+    border-radius: 10px;
 }
 .botonMenuPrincipalRegistrarReserva:hover{
     cursor: pointer;
+    background-color: rgb(255, 152, 152);
 }
 
 /* Seccion Registrar Reserva*/
@@ -54,18 +56,22 @@ body {
     grid-row:4/5;
     width: 25vw;
     height: 7vh;
+    border-radius: 10px;
 }
 .botonRegistrarReserva:hover{
     cursor: pointer;
+    background-color: rgb(255, 152, 152);
 }
 .botonMostrarReserva{
     grid-column: 2/3;
     grid-row: 6/7;
     width: 25vw;
     height: 7vh;
+    border-radius: 10px;
 }
 .botonMostrarReserva:hover{
     cursor: pointer;
+    background-color: rgb(255, 152, 152);
 }
 .formularioPP{
     grid-row: 2/3;
@@ -74,12 +80,29 @@ body {
     height: 10vh;
 }
 .formularioReserva{
-    background-color: rgb(255, 0, 0);
+    background-color: rgb(255, 255, 255);
     display: flex;
     flex-direction: column;
     grid-column:2/3;
     grid-row: 2/3;
+    border: solid;
 } 
+.formularioReserva select{
+    height: 30px;
+    margin: 5px;
+    border: solid 1px;
+}
+
+.formularioReserva input{
+    height: 30px;
+    margin: 5px;
+    border: solid 1px;
+}
+
+.botonTerminarReserva:hover{
+    cursor: pointer;
+    background-color: wheat;
+}
 /*Seccion Mostrar Reservas*/
 .reservasProximas{
     background-color: rgb(255, 203, 203);
@@ -99,24 +122,27 @@ body {
     grid-row: 5/6;
     width: 25vw;
     height: 7vh;
+    border-radius: 10px;
 }
 .botonMenuPrincipalMostrarReservas:hover{
     cursor: pointer;
+    background-color: rgb(255, 152, 152);
 }
 .botonCancelarReserva{
     width: 15px;
     height: 15px;
     border: solid 1px;
-    background-color: rgba(9, 187, 39, 0.479);
+    background-color: rgba(14, 216, 41, 0.815);
 }
 .botonCancelarReserva:hover{
     cursor: pointer;
+    background-color: red;
 }
 .botonCancelarReservaDefinitivo{
     grid-column: 2/3;
     grid-row: 6/7;
-    width: 100px;
-    height: 40px;
+    width: 140px;
+    height: 50px;
     margin-left: 280px;
     margin-bottom: 10px;
     border-radius: 10px;

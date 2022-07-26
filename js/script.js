@@ -38,7 +38,6 @@ class Restaurante{
 
 
     mostrarProximasReservas(){
-        console.log(this.reservas);
         const reservasProximas = this.reservas.filter(reservasProx => reservasProx.reservaPendiente === 'true');
         reservasProximas.sort(function(a, b){
             let primerFecha = new Date(a.diaReserva);
@@ -47,7 +46,6 @@ class Restaurante{
             if (primerFecha > segundaFecha) return 1;
             return 0;
         });
-        console.log(reservasProximas);
         return reservasProximas;
     }
 
@@ -94,20 +92,15 @@ const registarReserva = document.getElementById("registarReserva");
 
 const reservasStorage = () =>{
     let reservasRecuperar = JSON.parse(localStorage.getItem(`reservas`));
-    console.log(reservasRecuperar);
     if (!!reservasRecuperar && reservasRecuperar.length > 0) {
         let i = 0;
         for (const reserva of reservasRecuperar){
-            console.log(i);
             controlador.reservas[i] = reserva;
-            console.log(controlador.reservas[i]);
             i++;
         }
-        console.log(controlador.reservas);
     }else{
         obtenerReservaAsync();
     }
-    console.log(controlador);
 }
 
 const obtenerReservaAsync = async () => {
@@ -133,7 +126,7 @@ const imprimirFormulario = () =>{
         <input id="telefonoReserva" type="number" autocomplete="off" placeholder="Ingresar el telefono a cargo de la reserva" />
         <input id="cantPersonasReservas" type="number" autocomplete="off" placeholder="Ingresar la cantidad de personas en la reserva" />
         <select name="mes" id="horaReserva" class="form-select">
-            <option selected>Horario de Reserva</option>
+            <option selected>-- Seleccionar Hora --</option>
             <option value="12.30">12.30 HS</option>
             <option value="13">13 HS</option>
             <option value="13.30">13.30 HS</option>
@@ -144,7 +137,7 @@ const imprimirFormulario = () =>{
             <option value="22">22 HS</option>                                
         </select>
         <input id="fechaReserva" type="date" autocomplete="off" placeholder="Ingresar el dia de la reserva (formato MM/DD/YYYY)" />
-        <input id="btn" type="submit" value="Agregar Reserva" />
+        <input id="btn" type="submit" class="botonTerminarReserva" value="Agregar Reserva" />
     </form>
     `;
 }
@@ -159,7 +152,6 @@ const fechaVieja = (fechaPedida, horaPedida) =>{
 const asignarDom = (boton) =>{
     for(let i=0; i < controlador.reservas.length; i++){
         boton[i] = document.getElementById(`botonReserva${i}`);
-        console.log(boton[i]);
     }
     return boton;
 }
@@ -198,13 +190,16 @@ registarReserva.onclick = () => {
         nombrePersona.value = nombrePersona.value || "NO DEFINIDO";
         telefonoResponsable.value = telefonoResponsable.value || 0;
         cantPerReserva.value = cantPerReserva.value || 0;
-        horaReserva.value = horaReserva.value || 0;
-        console.log(horaReserva.value); 
+        horaReserva.value = horaReserva.value || '0';
         diaReserva.value = diaReserva.value || "1000-01-01";
         if (fechaVieja(diaReserva.value, horaReserva.value) === false){
             Swal.fire({
                 title: 'Desea cargar la siguiente reserva?',
-                text: `|${nombrePersona.value}|${telefonoResponsable.value}|${cantPerReserva.value}|${diaReserva.value}|${horaReserva.value}|`,
+                text: `|Nombre: ${nombrePersona.value}
+                        |Telefono: ${telefonoResponsable.value}
+                        |Cantidad: ${cantPerReserva.value}
+                        |Dia: ${diaReserva.value}
+                        |Hora: ${horaReserva.value}|`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -254,7 +249,6 @@ mostrarReservas.onclick = () => {
     let i=0;
     for (reservaProxima of controlador.mostrarProximasReservas()){
         controlador.reservas[i] = reservaProxima;
-        console.log(reservaProxima);
         let fecha = new Date(reservaProxima.diaReserva);
         fecha.setDate(fecha.getDate() + 1);
         const listado = document.createElement('li');
@@ -264,7 +258,6 @@ mostrarReservas.onclick = () => {
             listado.innerHTML =  `La proxima reserva esta a nombre de ${reservaProxima.nombreReserva} para ${reservaProxima.cantPersonas} personas, para el ${fecha.toLocaleDateString()} -- HORA: ${reservaProxima.horaReserva}HS <button id = "botonReserva${i}" value="${i}" class="botonCancelarReserva"></button>\n`;
         }
         i+=1;
-        console.log (i);
         listaReservas.append(listado);
     }
     let botonReserva = [];
@@ -277,12 +270,16 @@ mostrarReservas.onclick = () => {
 const asignarEvento = (boton) =>{
     for(let i=0; i < controlador.reservas.length; i++){
         boton[i].onclick = () =>{
+            console.log(boton[i]);
+            for (let i=0; i<boton.length;i++){
+                boton[i].classList.add("desactivoDisplay");
+            }
             const botonBorrarReserva = document.createElement('div');
             botonBorrarReserva.innerHTML = `<button id = "borrarReserva" value="" class="botonCancelarReservaDefinitivo">BORRAR RESERVA de ${controlador.reservas[i].nombreReserva}</button>`
             listaReservas.append(botonBorrarReserva);
-            let indice = boton[i].value;
             const borrarReserva = document.getElementById("borrarReserva");
             borrarReserva.onclick = () =>{
+                console.log(i)
                 Swal.fire({
                     title: `Desea borrar la resera de ${controlador.reservas[i].nombreReserva}?`,
                     text: "Una vez borrada no se podra recuperar!",
@@ -295,10 +292,8 @@ const asignarEvento = (boton) =>{
                     if (result.isConfirmed) {
                         //ACA SEGUIR PARA BORRAR
                         controlador.reservas.splice(i,1);
-                        console.log(controlador.reservas);
                         localStorage.setItem(`reservas`, JSON.stringify(controlador.reservas));
-                        let reservasRecuperar2 = JSON.parse(localStorage.getItem(`reservas`));
-                        console.log(reservasRecuperar2);
+                        location.reload()
                       Swal.fire(
                         'Deleted!',
                         'Your file has been deleted.',
@@ -307,8 +302,6 @@ const asignarEvento = (boton) =>{
                     }
                   })
             }
-            console.log(indice);
-
         }
     }
 }
