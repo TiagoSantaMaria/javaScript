@@ -156,13 +156,49 @@ const asignarDom = (boton) =>{
     return boton;
 }
 
+const inicioSesion = () =>{
+    const botonCargarSesion = document.getElementById("cargaDatosUsuario");
+    const nombreUsuario = document.getElementById("nombreUsuario");
+    const claveUsuario = document.getElementById("claveUsuario");
+    let cargarSesion = sessionStorage.getItem(`sesion`);
+    if (!!cargarSesion && cargarSesion.length > 0){
+        botonCargarSesion.classList.add("desactivoDisplay");
+        nombreUsuario.classList.add("desactivoDisplay");
+        claveUsuario.classList.add("desactivoDisplay");
+        const registarReserva = document.getElementById("registarReserva");
+        registarReserva.classList.remove("desactivoDisplay");
+        const desplegarReservas = document.getElementById("mostrarReserva");
+        desplegarReservas.classList.remove("desactivoDisplay");
+    }else{
+        botonCargarSesion.onclick = () => {
+            if (nombreUsuario.value === controlador.usuario && claveUsuario.value === controlador.clave){
+                sessionStorage.setItem(`sesion`, `SesionActiva`);
+                console.log(nombreUsuario.value);
+                console.log(claveUsuario.value);
+                nombreUsuario.classList.add("desactivoDisplay");
+                claveUsuario.classList.add("desactivoDisplay");
+            }else{
+                console.log(nombreUsuario.value);
+                console.log(controlador.nombre);
+                console.log(claveUsuario.value);
+                console.log(controlador.clave);
+                window.alert("ERRORRR");
+            }
+        }
+    }
+}
 
 //--------------
 
 //CONTROLADOR
 let controlador = new Restaurante;
 
-//TRAER DATOS DEL STORAGE
+
+
+
+
+//TRAER DATOS DEL STORAGE Y BASE DE DATOS (archivo JSON)
+inicioSesion();
 reservasStorage();
 
 //BOTON REGISTRAR NUEVA RESERVA
@@ -246,6 +282,7 @@ mostrarReservas.onclick = () => {
     elemento2.classList.add("desactivoDisplay");
     volverMenuPrincipal.classList.remove("desactivoDisplay");
     volverMenuPrincipal.classList.add("botonMenuPrincipalMostrarReservas");
+    listaReservas.classList.remove("desactivoDisplay");
     let i=0;
     for (reservaProxima of controlador.mostrarProximasReservas()){
         controlador.reservas[i] = reservaProxima;
@@ -264,9 +301,6 @@ mostrarReservas.onclick = () => {
     asignarDom(botonReserva);
     asignarEvento(botonReserva);
 }
-
-
-
 const asignarEvento = (boton) =>{
     for(let i=0; i < controlador.reservas.length; i++){
         boton[i].onclick = () =>{

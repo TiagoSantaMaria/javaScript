@@ -11,15 +11,21 @@
     <div class="usoGrid paginaPrincipal">
         <!--Contenido Principal-->
         <h1 class="tituloPagina">Restaurante Session's</h1>
-        <button id = "registarReserva" class="botonRegistrarReserva">REGISTRAR NUEVA RESERVA</button>
-        <button id = "mostrarReserva" class="botonMostrarReserva">MOSTRAR RESERVAS PROXIMAS</button>
+        <!-- LOGEO -->
+        <form action="" class="formularioInicioSesion">
+            <input id="nombreUsuario" class="registroNombreUsuario" type="text" autocomplete="off" placeholder="                      Ingresar NOMBRE de usuario"/>
+            <input id="claveUsuario" class="registroClaveUsuario" type="text" autocomplete="off" placeholder="                        Ingresar CLAVE de usuario"/>
+            <button id = "cargaDatosUsuario" class="registroUsuario">Cargar Session</button>
+        </form>
+        <button id = "registarReserva" class="botonRegistrarReserva desactivoDisplay">REGISTRAR NUEVA RESERVA</button>
+        <button id = "mostrarReserva" class="botonMostrarReserva desactivoDisplay">MOSTRAR RESERVAS PROXIMAS</button>
         <!--Contenido Secundario-->
         <button id = "volverMenuPrincipal" class="desactivoDisplay">VOLVER AL MENU PRINCIPAL</button>
         <!-- Relleno Registrar Reserva-->
         <div id = "formulario" class=""></div>
         <div id="respuestaFormulario"></div>
         <!--Relleno Mostrar Reservas-->
-        <div id ="mostrarReservasProximas" class="reservasProximas"></div>
+        <div id ="mostrarReservasProximas" class="reservasProximas desactivoDisplay"></div>
     </div>
     
     

@@ -17,6 +17,27 @@ body {
     display: none;
 }
 
+
+/* Inicio de Session */
+.formularioInicioSesion{
+    grid-row: 3/4;
+    grid-column: 2/3;
+    display: flex;
+    flex-direction: column;
+}
+.formularioInicioSesion input{
+    height: 20px;
+    width: 340px;
+}
+.formularioInicioSesion button{
+    height: 25px;
+}
+.formularioInicioSesion button:hover{
+    cursor: pointer;
+    background-color: bisque;
+}
+
+
 /*Seccion Pagina Principal*/
 .usoGrid{
     display: grid;
