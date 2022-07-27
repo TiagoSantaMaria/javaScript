@@ -26,11 +26,17 @@ class Restaurante{
         let capacidadAcumulada = cantPersonas;
         this.reservas.forEach( reserva => {
             if (reserva.diaReserva === fechaCorrienteReserva.toISOString()){
+                console.log(reserva.diaReserva);
+                console.log(fechaCorrienteReserva.toISOString());
+                console.log(reserva.diaReserva === fechaCorrienteReserva.toISOString());
                 capacidadAcumulada =  capacidadAcumulada + parseInt(reserva.cantPersonas);
+                console.log(capacidadAcumulada);
             }
         });
         if (capacidadAcumulada <= this.reservasMaxPorDia){
             return 'true';
+        }else{
+            return 'false';
         }
     }
     //------------------------
@@ -48,15 +54,6 @@ class Restaurante{
         });
         return reservasProximas;
     }
-
-/*
-    confirmarReserva(){
-        let nombreReserva = prompt(`Ingrese el nombre del dueño de la reserva:`);
-        let reservaCompletada = this.reservas.find(reservaPen => reservaPen.nombreResponsable === nombreReserva);
-        const index = this.reservas.indexOf(reservaCompletada);
-        this.reservas[index].reservaPendiente = 'false';
-    }
-*/
 }
 
 class Reserva{
@@ -160,34 +157,82 @@ const inicioSesion = () =>{
     const botonCargarSesion = document.getElementById("cargaDatosUsuario");
     const nombreUsuario = document.getElementById("nombreUsuario");
     const claveUsuario = document.getElementById("claveUsuario");
+    const cargaDatosUsuario = document.getElementById("cargaDatosUsuario");
+    const registroSesion = document.getElementById("registroSesion");
+    const registarReserva = document.getElementById("registarReserva");
+    const desplegarReservas = document.getElementById("mostrarReserva");
     let cargarSesion = sessionStorage.getItem(`sesion`);
     if (!!cargarSesion && cargarSesion.length > 0){
         botonCargarSesion.classList.add("desactivoDisplay");
         nombreUsuario.classList.add("desactivoDisplay");
         claveUsuario.classList.add("desactivoDisplay");
-        const registarReserva = document.getElementById("registarReserva");
+        cargaDatosUsuario.classList.add("desactivoDisplay");
         registarReserva.classList.remove("desactivoDisplay");
-        const desplegarReservas = document.getElementById("mostrarReserva");
         desplegarReservas.classList.remove("desactivoDisplay");
     }else{
-        botonCargarSesion.onclick = () => {
+        botonCargarSesion.onclick = (e) => {
+            e.preventDefault();
             if (nombreUsuario.value === controlador.usuario && claveUsuario.value === controlador.clave){
                 sessionStorage.setItem(`sesion`, `SesionActiva`);
-                console.log(nombreUsuario.value);
-                console.log(claveUsuario.value);
                 nombreUsuario.classList.add("desactivoDisplay");
                 claveUsuario.classList.add("desactivoDisplay");
+                cargaDatosUsuario.classList.add("desactivoDisplay");
+                registarReserva.classList.remove("desactivoDisplay");
+                desplegarReservas.classList.remove("desactivoDisplay");
             }else{
-                console.log(nombreUsuario.value);
-                console.log(controlador.nombre);
-                console.log(claveUsuario.value);
-                console.log(controlador.clave);
-                window.alert("ERRORRR");
+                Swal.fire({
+                    title: 'Contraseña Incorrecta',
+                    showClass: {
+                      popup: 'animate__animated animate__fadeInDown'
+                    },
+                    hideClass: {
+                      popup: 'animate__animated animate__fadeOutUp'
+                    }
+                  })
+                  registroSesion.reset();
             }
         }
     }
 }
 
+const asignarEvento = (boton) =>{
+    for(let i=0; i < controlador.reservas.length; i++){
+        boton[i].onclick = () =>{
+            console.log(boton[i]);
+            for (let i=0; i<boton.length;i++){
+                boton[i].classList.add("desactivoDisplay");
+            }
+            const botonBorrarReserva = document.createElement('div');
+            botonBorrarReserva.innerHTML = `<button id = "borrarReserva" value="" class="botonCancelarReservaDefinitivo">BORRAR RESERVA de ${controlador.reservas[i].nombreReserva}</button>`
+            listaReservas.append(botonBorrarReserva);
+            const borrarReserva = document.getElementById("borrarReserva");
+            borrarReserva.onclick = () =>{
+                console.log(i)
+                Swal.fire({
+                    title: `Desea borrar la resera de ${controlador.reservas[i].nombreReserva}?`,
+                    text: "Una vez borrada no se podra recuperar!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes!'
+                  }).then((result) => {
+                    if (result.isConfirmed) {
+                        //ACA SEGUIR PARA BORRAR
+                        controlador.reservas.splice(i,1);
+                        localStorage.setItem(`reservas`, JSON.stringify(controlador.reservas));
+                        location.reload();
+                      Swal.fire(
+                        'Deleted!',
+                        'Your file has been deleted.',
+                        'success'
+                      )
+                    }
+                  })
+            }
+        }
+    }
+}
 //--------------
 
 //CONTROLADOR
@@ -231,10 +276,10 @@ registarReserva.onclick = () => {
         if (fechaVieja(diaReserva.value, horaReserva.value) === false){
             Swal.fire({
                 title: 'Desea cargar la siguiente reserva?',
-                text: `|Nombre: ${nombrePersona.value}
-                        |Telefono: ${telefonoResponsable.value}
-                        |Cantidad: ${cantPerReserva.value}
-                        |Dia: ${diaReserva.value}
+                text: `|Nombre: ${nombrePersona.value}| -- 
+                        |Telefono: ${telefonoResponsable.value}| -- 
+                        |Cantidad: ${cantPerReserva.value}| -- 
+                        |Dia: ${diaReserva.value}| --
                         |Hora: ${horaReserva.value}|`,
                 icon: 'warning',
                 showCancelButton: true,
@@ -257,11 +302,10 @@ registarReserva.onclick = () => {
             })
         }else{
             Swal.fire(
-                `ESA FECHA ES VIEJA!!!`
+                `Por favor, no ingrese una fecha/hora vieja.`
             )
         }
     }
-    console.log(controlador);
 }
 
 //BOTON MENU PRINCIPAL
@@ -301,44 +345,7 @@ mostrarReservas.onclick = () => {
     asignarDom(botonReserva);
     asignarEvento(botonReserva);
 }
-const asignarEvento = (boton) =>{
-    for(let i=0; i < controlador.reservas.length; i++){
-        boton[i].onclick = () =>{
-            console.log(boton[i]);
-            for (let i=0; i<boton.length;i++){
-                boton[i].classList.add("desactivoDisplay");
-            }
-            const botonBorrarReserva = document.createElement('div');
-            botonBorrarReserva.innerHTML = `<button id = "borrarReserva" value="" class="botonCancelarReservaDefinitivo">BORRAR RESERVA de ${controlador.reservas[i].nombreReserva}</button>`
-            listaReservas.append(botonBorrarReserva);
-            const borrarReserva = document.getElementById("borrarReserva");
-            borrarReserva.onclick = () =>{
-                console.log(i)
-                Swal.fire({
-                    title: `Desea borrar la resera de ${controlador.reservas[i].nombreReserva}?`,
-                    text: "Una vez borrada no se podra recuperar!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes!'
-                  }).then((result) => {
-                    if (result.isConfirmed) {
-                        //ACA SEGUIR PARA BORRAR
-                        controlador.reservas.splice(i,1);
-                        localStorage.setItem(`reservas`, JSON.stringify(controlador.reservas));
-                        location.reload()
-                      Swal.fire(
-                        'Deleted!',
-                        'Your file has been deleted.',
-                        'success'
-                      )
-                    }
-                  })
-            }
-        }
-    }
-}
+
 
 
 
