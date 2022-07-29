@@ -181,7 +181,7 @@ const inicioSesion = () =>{
                 desplegarReservas.classList.remove("desactivoDisplay");
             }else{
                 Swal.fire({
-                    title: 'Contraseña Incorrecta',
+                    title: 'Datos Incorrectos!',
                     showClass: {
                       popup: 'animate__animated animate__fadeInDown'
                     },
@@ -198,7 +198,6 @@ const inicioSesion = () =>{
 const asignarEvento = (boton) =>{
     for(let i=0; i < controlador.reservas.length; i++){
         boton[i].onclick = () =>{
-            console.log(boton[i]);
             for (let i=0; i<boton.length;i++){
                 boton[i].classList.add("desactivoDisplay");
             }
@@ -207,7 +206,6 @@ const asignarEvento = (boton) =>{
             listaReservas.append(botonBorrarReserva);
             const borrarReserva = document.getElementById("borrarReserva");
             borrarReserva.onclick = () =>{
-                console.log(i)
                 Swal.fire({
                     title: `Desea borrar la resera de ${controlador.reservas[i].nombreReserva}?`,
                     text: "Una vez borrada no se podra recuperar!",
